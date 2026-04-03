@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import pkIndexView from '@/views/pk/PkIndexView'
 import RecordIndexView from '@/views/record/RecordIndexView'  
 import RanklistIndexView from '@/views/ranklist/RanklistIndexView'
-import UserBotIndexView from '@/views/user/bot/UserBotIndexView'
+
 import NotFound from '@/views/error/NotFound'
 import UserAccountLoginView from '@/views/user/account/UserAccountLoginView.vue'
 import UserAccountRegisterView from '@/views/user/account/UserAccountRegisterView.vue'
@@ -46,7 +46,7 @@ const routes = [
   {
     path: '/user/bot/',
     name: 'user_bot_index',
-    component: UserBotIndexView,
+    component: () => import('@/views/user/bot/UserBotIndexView.vue'),
     meta:{
       requiresAuth: true,
     }
