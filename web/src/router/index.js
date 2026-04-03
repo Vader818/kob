@@ -4,41 +4,85 @@ import RecordIndexView from '@/views/record/RecordIndexView'
 import RanklistIndexView from '@/views/ranklist/RanklistIndexView'
 import UserBotIndexView from '@/views/user/bot/UserBotIndexView'
 import NotFound from '@/views/error/NotFound'
+import UserAccountLoginView from '@/views/user/account/UserAccountLoginView.vue'
+import UserAccountRegisterView from '@/views/user/account/UserAccountRegisterView.vue'
+import store from '@/store'
+
+
 
 const routes = [
   {
     path: '/',
     redirect: '/pk/',
-    name: 'home'
+    name: 'home',
+    meta:{
+      requiresAuth: true,
+    }
   },
   {
     path: '/pk/',
     name: 'pk_index',
-    component: pkIndexView
+    component: pkIndexView,
+        meta:{
+      requiresAuth: true,
+    }
   },
   {
     path: '/record/',
     name: 'record_index',
-    component: RecordIndexView
+    component: RecordIndexView,
+    meta:{
+      requiresAuth: true,
+    }
   },
   {
     path: '/ranklist/',
     name: 'ranklist_index',
-    component: RanklistIndexView
+    component: RanklistIndexView,
+    meta:{
+      requiresAuth: true,
+    }
   },
   {
     path: '/user/bot/',
     name: 'user_bot_index',
-    component: UserBotIndexView
+    component: UserBotIndexView,
+    meta:{
+      requiresAuth: true,
+    }
+  },
+  {
+    path: '/404/',
+    name: 'not_found_index',
+    component: NotFound,
+    meta:{
+      requiresAuth: false,
+    }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404/'
+  },
+  {
+    path: '/user/account/login/',
+    name: 'user_account_login',
+    component: UserAccountLoginView,
+    meta:{
+      requiresAuth: false,
+    }
+  },
+  {
+    path: '/user/account/register/',
+    name: 'user_account_register',
+    component: UserAccountRegisterView,
+    meta:{
+      requiresAuth: false,
+    }
   },
   {
     path: '/404/',
     name: 'not_found_index',
     component: NotFound
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/404/'
   }
 ]
 
@@ -46,5 +90,15 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  if(to.meta.requiresAuth && !store.state.user.is_login) {
+    next({name:'user_account_login'});
+  }else{
+    next();
+  }
+});
+
+
 
 export default router
