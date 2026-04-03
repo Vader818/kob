@@ -1,7 +1,7 @@
 <template>
   
   <content-field>
-
+    我的NIGGER
   </content-field>
 
 </template>
@@ -19,24 +19,24 @@ export default {
     },
     setup() {
         const store = useStore();
-        $.ajax({
-            url: "http://127.0.0.1:3000/user/bot/add/",
-            type: "POST",
-            data: {
-                title: "Bot的标题",
-                description : "Bot的描述",
-                content: "Bot的代码",
-            },
-            headers: {
-                Authorization: "Bearer " + store.state.user.token,
-            },
-            success(resp) {
-                console.log(resp);
-            },
-            error(resp) {
-                console.log(resp);
-            }
-        })
+        // $.ajax({
+        //     url: "http://localhost:3000/user/bot/add/",
+        //     type: "POST",
+        //     data: {
+        //         title: "Bot的标题",
+        //         description : "Bot的描述",
+        //         content: "Bot的代码",
+        //     },
+        //     headers: {
+        //         Authorization: "Bearer " + store.state.user.token,
+        //     },
+        //     success(resp) {
+        //         console.log(resp);
+        //     },
+        //     error(resp) {
+        //         console.log(resp);
+        //     }
+        // })
 
         // $.ajax({
         //     url: "http://127.0.0.1:3000/user/bot/remove/",
@@ -68,26 +68,26 @@ export default {
         //         Authorization: "Bearer " + store.state.user.token,
         //     },
         //     success(resp) {
-        //         console.log("后端返回：", JSON.stringify(resp));
+        //         console.log(resp);
         //     },
         //     error(resp) {
         //         console.log(resp);
         //     }
         // })
 
-        // $.ajax({
-        //     url: "http://127.0.0.1:3000/user/bot/getlist/",
-        //     type: "get",
-        //     headers: {
-        //         Authorization: "Bearer " + store.state.user.token,
-        //     },
-        //     success(resp) {
-        //         console.log(resp);
-        //     },
-        //     error(resp) {
-        //         console.log(resp);
-        //     }
-        // })
+        $.ajax({
+            url: "http://127.0.0.1:3000/user/bot/getlist/",
+            type: "get",
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,
+            },
+            success(resp) {
+                console.log(resp);
+            },
+            error(resp) {
+                console.log(resp);
+            }
+        })
     }
 }
 </script>
