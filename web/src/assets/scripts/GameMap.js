@@ -4,10 +4,11 @@ import { Wall } from "./Wall";
 
 
 export class GameMap extends AcGameObject{
-    constructor(ctx,parent){
+    constructor(ctx,parent,store){
         super();
         this.ctx = ctx;
         this.parent = parent;
+        this.store = store;
         this.L = 0; 
 
         this.rows = 13;
@@ -22,66 +23,11 @@ export class GameMap extends AcGameObject{
 
     }
 
-    check_connectivity(g,sx,sy,tx,ty){ //检查地图是否联通，g是地图，sx,sy是起点坐标，tx,ty是终点坐标
-        if(sx == tx && sy == ty){ //如果起点和终点是同一个点，说明已经联通了
-            return true;
-        }
-        g[sx][sy] = true; //将起点标记为已经访问过了
-        let dx = [-1,0,1,0],dy = [0,1,0,-1];  //四个方向的偏移量
-        for(let i = 0;i < 4;i++){
-            let x = sx + dx[i],y = sy + dy[i];
-            if(!g[x][y] && this.check_connectivity(g,x,y,tx,ty)){ //如果这个点没有被访问过，并且从这个点出发可以到达终点，说明已经联通了
-                return true;
-            }
-            
-        }
-        return false;
 
-    }
 
     create_walls(){
-        const g = [];
-        for(let r = 0;r < this.rows;r++){
-            g[r] = [];
-            for(let c = 0;c < this.cols;c++){
-                g[r][c] = false;
-            }
-        }
-        // 在地图的四周创建墙
-        for(let r = 0;r < this.rows;r++){
-            g[r][0] = true;
-            g[r][this.cols - 1] = true;
-        }
-        for(let c = 0;c < this.cols;c++){
-            g[0][c] = true;
-            g[this.rows - 1][c] = true;
-        }
         
-        // 在地图中间随机创建障碍物
-        for(let i = 0;i < this.inner_walls_count/2;i++){
-            for(let j = 0;j < 1000;j++){
-                const r = parseInt(Math.random() * this.rows);
-                const c = parseInt(Math.random() * this.cols);
-                if(g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]){ //如果这个位置已经有墙了，或者它对称的位置已经有墙了，就重新随机一个位置
-                    continue;
-                }
-
-                if(r == this.rows - 2 && c == 1 || r == 1 && c == this.cols - 2 ){ //如果这个位置是玩家出生点，就重新随机一个位置
-                    continue;
-                }
-
-                g[r][c] = true;
-                g[this.rows - 1 - r][this.cols - 1 - c] = true;
-                break;
-            }
-
-
-        }
-
-        const copy_g = JSON.parse(JSON.stringify(g)); //深复制地图，防止修改原地图
-        if(!this.check_connectivity(copy_g, this.rows - 2, 1, 1, this.cols - 2)){ //如果地图不联通，就重新创建地图
-            return false;
-        }
+        const g = this.store.state.pk.gamemap; //从store中获取服务器传来的地图数据
 
         // 将墙添加到walls数组中
         for(let r = 0;r < this.rows;r++){
@@ -92,16 +38,10 @@ export class GameMap extends AcGameObject{
             }
         }
 
-        return true;
     }
 
     start(){
-        for(let i = 0;i < 1000;i++){
-            if(this.create_walls()){
-                break;
-            }
-        }
-
+        this.create_walls();
         this.add_listening_events();
     }
 
