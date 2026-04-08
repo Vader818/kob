@@ -1,6 +1,5 @@
 package com.kob.backend.service.impl.user.bot;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kob.backend.mapper.BotMapper;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.User;
@@ -11,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,18 +20,18 @@ public class AddServiceImpl implements AddService {
     @Autowired
     private BotMapper botMapper;
 
-
     @Override
     public Map<String, String> add(Map<String, String> data) {
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl loginUser = (UserDetailsImpl) token.getPrincipal();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl loginUser = (UserDetailsImpl) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
 
         String title = data.get("title");
         String description = data.get("description");
         String content = data.get("content");
 
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
 
         if (title == null || title.length() == 0) {
             map.put("error_message", "标题不能为空");
@@ -64,22 +62,12 @@ public class AddServiceImpl implements AddService {
             return map;
         }
 
-        QueryWrapper<Bot> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", user.getId());
-        if (botMapper.selectCount(queryWrapper) >= 10) {
-            map.put("error_message", "每个用户最多只能创建10个Bot！");
-            return map;
-        }
-
         Date now = new Date();
         Bot bot = new Bot(null, user.getId(), title, description, content, now, now);
 
         botMapper.insert(bot);
         map.put("error_message", "success");
 
-
         return map;
     }
-
-
 }
