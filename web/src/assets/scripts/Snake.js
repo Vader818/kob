@@ -103,8 +103,12 @@ export class Snake extends AcGameObject{
                 const tail_target = this.cells[k - 2];
                 const tail_dx = tail_target.x - tail.x;
                 const tail_dy = tail_target.y - tail.y;
-                tail.x += move_distance * tail_dx / distance;
-                tail.y += move_distance * tail_dy / distance;
+                const tail_distance = Math.sqrt(tail_dx * tail_dx + tail_dy * tail_dy);
+
+                if (tail_distance > this.eps) {
+                    tail.x += move_distance * tail_dx / tail_distance;
+                    tail.y += move_distance * tail_dy / tail_distance;
+                }
             }
         
         
