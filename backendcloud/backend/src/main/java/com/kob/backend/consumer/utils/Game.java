@@ -295,6 +295,9 @@ public class Game extends Thread {
 
         updateUserRating(playerA, ratingA);
         updateUserRating(playerB, ratingB);
+        if (!"all".equals(loser)) {
+            WebSocketServer.invalidateRanklistCache();
+        }
 
 
 

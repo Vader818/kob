@@ -3,6 +3,7 @@ package com.kob.backend.service.impl.user.account;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.User;
+import com.kob.backend.service.impl.ranklist.RanklistCacheService;
 import com.kob.backend.service.user.account.RegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,9 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RanklistCacheService ranklistCacheService;
 
     @Override
     public Map<String, String> register(String username, String password, String confirmedPassword) {
@@ -70,6 +74,7 @@ public class RegisterServiceImpl implements RegisterService {
         String photo = "https://cdn.acwing.com/media/user/profile/photo/1_lg_844c66b332.jpg";
         User user = new User(null, username, encodedPassword, photo, 1500);
         userMapper.insert(user);
+        ranklistCacheService.invalidate();
 
         map.put("error_message", "success");
         return map;

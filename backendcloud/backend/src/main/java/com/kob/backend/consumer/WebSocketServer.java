@@ -8,6 +8,7 @@ import com.kob.backend.mapper.RecordMapper;
 import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.User;
+import com.kob.backend.service.impl.ranklist.RanklistCacheService;
 import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,7 @@ public class WebSocketServer {
     public static RecordMapper recordMapper;
     private static BotMapper botMapper;
     public static RestTemplate restTemplate;
+    private static RanklistCacheService ranklistCacheService;
     public Game game = null;
     private final static String addPlayerUrl = "http://127.0.0.1:3001/player/add/";
     private final static String removePlayerurl = "http://127.0.0.1:3001/player/remove/";
@@ -54,6 +56,16 @@ public class WebSocketServer {
     @Autowired
     public void setRestTemplate(RestTemplate restTemplate) {
         WebSocketServer.restTemplate = restTemplate;
+    }
+    @Autowired
+    public void setRanklistCacheService(RanklistCacheService ranklistCacheService) {
+        WebSocketServer.ranklistCacheService = ranklistCacheService;
+    }
+
+    public static void invalidateRanklistCache() {
+        if (ranklistCacheService != null) {
+            ranklistCacheService.invalidate();
+        }
     }
 
     @OnOpen

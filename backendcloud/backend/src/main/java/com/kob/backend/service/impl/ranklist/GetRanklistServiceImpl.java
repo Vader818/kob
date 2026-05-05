@@ -1,5 +1,6 @@
 package com.kob.backend.service.impl.ranklist;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -17,8 +18,17 @@ public class GetRanklistServiceImpl implements GetRanklistService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private RanklistCacheService ranklistCacheService;
+
     @Override
     public JSONObject getList(Integer page) {
+        String cacheVersion = ranklistCacheService.currentVersion();
+        String cachedRanklist = ranklistCacheService.getPage(cacheVersion, page);
+        if (cachedRanklist != null) {
+            return JSON.parseObject(cachedRanklist);
+        }
+
         IPage<User> userIPage = new Page<>(page, 3);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("rating");
@@ -28,6 +38,8 @@ public class GetRanklistServiceImpl implements GetRanklistService {
             user.setPassword("");
         resp.put("users", users);
         resp.put("users_count", userMapper.selectCount(null));
+
+        ranklistCacheService.setPage(cacheVersion, page, resp.toJSONString());
         return resp;
     }
 }
